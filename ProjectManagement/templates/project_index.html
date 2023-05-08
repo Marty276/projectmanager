@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Home</title>
+        <link rel="stylesheet" href="{% static 'style.css' %}" type="text/css">
+    </head>
+    <body id="body">
+        
+        <div class="page_shadow" id="page_shadow">
+            <div class="project_creator">
+                <p>Crear nuevo proyecto</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="title" class="title_new_project" placeholder="Título del proyecto" maxlength="150"><br>
+                    <textarea name="description" class="description_new_project" placeholder="Descripción del proyecto"></textarea>
+                    <input type="date" name="startdate" class="startdate_new_project">
+                    <button type="submit" placeholder="Crear" class="create_project" name="create_new_project">Crear</button>
+                </form>
+                
+            </div>
+        </div>
+
+        <header>
+            Project Management
+            <button class="create_new" id="create_button">Crear nuevo</button>
+        </header>
+        <br><br><br><br>
+        
+        
+            {% for item in lista %}
+                <div class="tarjeta" id={{ item.id_proyecto }}>
+                    {{ item.indice_proyecto }} - {{ item.title }}
+                    
+                    <div class="project_content" id={{ item.id_contenido }}>
+                        {{ item.description }}<br><br>
+                        <h2>Fecha de inicio: </h2>{{ item.startdate }}
+                        <br><br>
+
+                        <h2>Tareas:</h2><br>
+                        <div class="create_task" id={{ item.create_task_id }}>
+                            Crear tarea <br>
+                            <div class="create_task_content" id={{ item.create_task_content_id }}>
+                                <form method="POST" style="width: 100%;">
+                                    {% csrf_token %}
+                                    <input type="text" placeholder="Título de la tarea" name="title" class="title_new_task"><br>
+                                    <textarea name="description" placeholder="Descripción de la tarea" class="description_new_task"></textarea><br>
+                                    <input type="text" name="father_project_id" value={{ item.id }} style="display: none">
+                                    <button type="submit" placeholder="Crear" class="create_task_button" name="create_new_task" id="create_new_task">Crear</button>
+                                </form>
+                            </div>
+                        </div>
+                            {% for task in item.tareas %}
+                                <div class="task_container" id={{ task.id }}>
+                                    
+                                    <div class="edit_task" id="edit_task_{{ task.numeric_id }}">
+                                        <form method="POST">
+                                            {% csrf_token %}
+                                            <h3>Editar tarea</h3>
+                                            <input type="text" name="title" class="title_edited_task" placeholder="Título de la tarea" id="title_editing_task_{{ task.numeric_id }}"><br>
+                                            <textarea name="description" class="description_edited_task" placeholder="Descripción de la tarea" id="description_editing_task_{{ task.numeric_id }}"></textarea><br>
+                                            <input type="text" name="task_id" value={{ task.numeric_id }} style="display: none">
+                                            <button type="submit" class="edit_task_button" name="edit_task" id="save_task_{{ task.number_id }}">Editar</button>
+                                        </form>
+                                    </div>
+
+                                    <div class="task_text" id="task_text_{{ task.numeric_id }}">
+                                        <h3 id={{ task.task_title_id }} style="overflow-x: hidden;" id="title_task_{{ task.numeric_id }}">{{ task.title }}</h3>
+                                        <p id="{{ task.task_description_id }}" id="description_task_{{ task.numeric_id }}">{{ task.description }}</p>
+                                    </div>
+                                    <div class="task_icons">
+
+
+                                        <form class="task_icon task_sup_icon" method="POST">
+                                            {% csrf_token %}
+                                            <input type="text" style="display: none" name="task_id" value="{{ task.id }}">
+                                            {% if task.done == True %}
+                                                <button class="icon_done" name="task_done_to_undone" id="task_done_icon"></button>
+                                            {% elif task.done == False %}
+                                                <button class="icon_undone" name="task_undone_to_done" id="task_undone_icon"></button>
+                                            {% endif %}
+                                        </form>
+
+                                        <div class="task_icon">
+                                            
+                                            <button class="icon_edit" id="edit_task_button_{{ task.numeric_id }}" name="edit_task"></button>
+                                        </div>
+
+                                        <form class="task_icon task_inf_icon" method="POST">
+                                            {% csrf_token %}
+                                            <input type="text" style="display: none" name="task_id" value="{{ task.numeric_id }}">
+                                            <button class="icon_delete" name="delete_task" id="delete_task_{{ task.numeric_id }}"></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="text" value={{ item.id }} style="display: none" name="deleted_project_id">
+                            <input type="submit" value="Eliminar Proyecto" name="delete_project" id="delete_project_{{ item.id }}" class="delete_project">
+                        </form>
+                    </div>
+                    
+                </div>
+
+            {% endfor %}
+        </div>
+
+        <div class="footer">
+            Designed & developed by Marty B.
+        </div>
+
+        <script src="{% static 'index.js' %}"></script>
+        <script src="{% static 'tools.js' %}"></script>
+    </body>
+</html>
